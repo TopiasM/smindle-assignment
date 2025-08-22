@@ -4,5 +4,5 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OrderController;
 
 Route::prefix('v1')->group(function () {
-    Route::post('order', [OrderController::class, 'store']);
+    Route::post('order', [OrderController::class, 'create']);
 })->middleware('auth:sanctum');
