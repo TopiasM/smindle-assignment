@@ -49,7 +49,7 @@ class OrderController extends Controller
      * @return Order
      */
     private function storeOrder(array $data): Order {
-        $nextId = Order::max('id') + 1;
+        $orderId = Order::max('id') + 1;
 
         $order = new Order();
         $order->client_identity = $data['client']['identity'];
@@ -57,7 +57,7 @@ class OrderController extends Controller
         $order->client_address = implode(', ', array_slice($contactPoint, 0, -1)); // All but last part as address
         $country = end($contactPoint);
         $order->client_country = $country;
-        $order->order_number = "{$country}{$nextId}"; // Unique order number based on country and max ID
+        $order->order_number = "{$country}{$orderId}"; // Unique order number based on country and max ID
         $order->save();
 
         foreach ($data['contents'] as $content) {
