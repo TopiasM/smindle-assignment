@@ -1,0 +1,9 @@
+#!/bin/sh
+echo "Setting up smindle assignment"
+composer install &&
+cp .env.example .env &&
+docker network create --driver=bridge --subnet=192.168.200.0/24 --gateway=192.168.200.1 mock &&
+docker-compose -f traefik/docker-compose.yml up -d && 
+./vendor/bin/sail up -d &&
+./vendor/bin/sail artisan migrate:fresh &&
+./vendor/bin/sail artisan queue:work --queue=high,default,low
