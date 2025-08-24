@@ -12,7 +12,7 @@ class OrderController extends Controller
 {
     var $validationArray = [
         'client.identity' => 'required|string|max:255',
-        'client.contact_point' => 'required|string|max:255',
+        'client.contact_point' => 'required|string|max:255|regex:/\,\ /',
         'contents' => 'required|array',
         'contents.*.label' => 'required|string|max:255',
         'contents.*.kind' => 'required|in:single,recurring',
