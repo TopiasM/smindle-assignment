@@ -22,7 +22,7 @@ services:
       - "443:443"
     networks:
       mock:
-        ipv4_address: 192.138.200.3
+        ipv4_address: 192.168.200.3
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       # Map the static conf into the container

@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\OrderContent;
 use App\Enums\ContentKind;
 use Illuminate\Http\Request;
+use App\Jobs\ProcessRecurringItem;
 
 class OrderController extends Controller
 {
@@ -71,8 +72,20 @@ class OrderController extends Controller
             $orderContent->order()->associate($order);
             $orderContent->save();
 
-            if($kind === ContentKind::Recurring) {
-                // TODO
+            if($kind == ContentKind::Recurring) {
+                $frequency = $content['meta']['frequency'] ?? env('DEFAULT_ITEM_FREQUENCY', 'monthly');
+                /* 
+                    Not doing anything spesific with frequency. 
+                    But if frequency was unspecified, an email could be sent to the client
+                */
+
+                // Dispatch job for recurring items
+                $priority = $content['meta']['priority']  ?? 'default';
+                $item = $content['label'];
+                $value = $content['cost'];
+                $moment = now()->toDateTimeString();
+                ProcessRecurringItem::dispatch($item, $value, $moment)->onQueue($priority);
+                \Log::info("Dispatched job for recurring item({item})", ['item' => $item]);
             }
         }
 
