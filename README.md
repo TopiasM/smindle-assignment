@@ -1,61 +1,105 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Project setup
 
-## About Laravel
+**Prerequisites**: Git, Docker, PHP, Composer
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+1. Clone this git repository
+```
+git@github.com:TopiasM/smindle-assignment.git
+```
+2. Move to the project folder
+```
+cd smindle-assignment
+```
+3. Execute setup shell script, which runs composer install, traefik & sail containers, and Laravel migrations & queue.
+<br /><sup>(Uses network called mock and subnet 192.168.200.0/24. If these can't be used some changes need to be made)</sup>
+```
+./setup
+```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Request example
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**POST** /api/v1/order
 
-## Learning Laravel
+JSON body
+```
+{
+    "client": {
+        "identity": "Alan Turing",
+        "contact_point": "123 Enigma Ave, Bletchley Park, UK"
+    },
+    "contents": [
+        {
+            "label": "Smindle ElePHPant plushie",
+            "kind": "single",
+            "cost": 295.45,
+            "meta": {}
+        },
+        {
+            "label": "Syntax & Chill",
+            "kind": "recurring",
+            "cost": 175.00,
+            "meta": {
+                "frequency": "unspecified",
+                "priority": "high"
+            }
+        }
+    ]
+}
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Response (201 Created)
+```
+{
+    "status": 1,
+    "message": "Order created successfully",
+    "order": {
+        "client_identity": "Alan Turing",
+        "client_address": "123 Enigma Ave, Bletchley Park",
+        "client_country": "UK",
+        "order_number": "UK8",
+        "updated_at": "2025-08-24T21:14:41.000000Z",
+        "created_at": "2025-08-24T21:14:41.000000Z",
+        "id": 8,
+        "order_contents": [
+            {
+                "id": 15,
+                "order_id": 8,
+                "order_number": "UK8",
+                "label": "Smindle ElePHPant plushie",
+                "kind": "single",
+                "cost": 295.45,
+                "metadata": "[]",
+                "created_at": "2025-08-24T21:14:42.000000Z",
+                "updated_at": "2025-08-24T21:14:42.000000Z"
+            },
+            {
+                "id": 16,
+                "order_id": 8,
+                "order_number": "UK8",
+                "label": "Syntax & Chill",
+                "kind": "recurring",
+                "cost": 175,
+                "metadata": "{\"priority\": \"high\", \"frequency\": \"unspecified\"}",
+                "created_at": "2025-08-24T21:14:42.000000Z",
+                "updated_at": "2025-08-24T21:14:42.000000Z"
+            }
+        ]
+    }
+}
+```
+## My notes
+- Used traefik to create very-slow-api.test domain with https
+  - Set fixed ip address: 192.168.200.3 for treafik, so the laravel application can connect to it
+  - Used https://github.com/dipaksarkar/laravel-sail-with-traefik as a starting point
+  - Reroutes localhost/api/mock/orders -> https://very-slow-api.test/orders
+- Mysql and Redis used
+- All data is validated
+    - Expects contact_point to be an address + country
+- Installed laravel octane to allow more concurrent requests (Sail only supported one)
+- Queue jobs is used for handling the recurring items
+    - meta.frequency is used to assign the queue(high/default/low)
+- Created Idempotency middleware to check if duplicate requests are sent
+    - Used request to create the key, but usually this would be something that client would sent to the server
+    - 10 seconds timeout for same request bodys
+- Info about very-slow-api calls is stored in the api_calls table
